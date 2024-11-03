@@ -1,29 +1,43 @@
 import * as express from "express";
-import { Cat, CatType } from "./app.model";
-const app: express.Express = express();
-const port: number = 8000;
+import catsRouter from "./cats/app.route";
 
-app.use((req, res, next) => {
-  console.log(req.rawHeaders[1]);
-  next();
-});
+class Server {
+  public app: express.Application;
+  private port: number = 8000;
 
-app.get("/", (req: express.Request, res: express.Response) => {
-  res.send({ cats: Cat });
-});
+  constructor() {
+    const app: express.Application = express();
+    this.app = app;
+  }
 
-app.get("/cat/blue", (req: express.Request, res: express.Response) => {
-  res.send({ blue: Cat[0] });
-});
-app.get("/cat/some", (req: express.Request, res: express.Response) => {
-  res.send({ blue: Cat[1] });
-});
+  private setRoute() {
+    this.app.use(catsRouter);
+  }
 
-app.use((req, res, next) => {
-  console.log("404 not found middleware");
-  res.send({ error: "404 not found" });
-});
+  private setMiddleware() {
+    //* logging middleware
+    this.app.use((req, res, next) => {
+      console.log(req.rawHeaders[0]);
+      console.log("this is logging middleware");
+      next();
+    });
 
-app.listen(port, () => {
-  console.log(`Example app listening at http://localhost:${port}`);
-});
+    //* json meddleWear
+    this.app.use(express.json());
+
+    this.setRoute();
+
+    //* 404middleware
+    this.app.use((req, res, next) => {
+      console.log("404 not found middleware");
+      res.send({ error: "404 not found" });
+    });
+  }
+
+  public listen() {
+    this.setMiddleware();
+    this.app.listen(this.port, () => {
+      console.log(`Example app listening at http://localhost:${this.port}`);
+    });
+  }
+}
