@@ -13,9 +13,9 @@ export class AppController {
   getHello(
     @Req() req: Request,
     @Body() Body,
-    @Param('id') Param: { id: string; name: string },
+    // @Param('id') Param: { id: string; name: string },
   ): string {
-    console.log(req, Body, Param);
+    // console.log(req, Body, Param);
     return this.catsService.hiCatServiceProduct();
   }
 }
