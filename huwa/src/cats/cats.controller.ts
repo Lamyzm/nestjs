@@ -1,57 +1,46 @@
 import {
   Controller,
-  Delete,
   Get,
-  HttpException,
-  Param,
-  ParseIntPipe,
-  Patch,
   Post,
-  Put,
   UseFilters,
+  UseInterceptors,
+  Body,
 } from '@nestjs/common';
 import { CatsService } from 'src/cats/cats.service';
-import { HttpExceptionFilter } from '../http-exception.filter';
-import { PositiveIntPipe } from '../pipes/positive-int.pipe';
+
+import { SuccessInterceptor } from 'src/common/interceptors/success.interceptor';
+import { CatRequestsDto } from './dto/cats.request.dto';
+import { HttpExceptionFilter } from 'src/common/exceptions/http-exception.filter';
 
 @Controller('cats')
+@UseInterceptors(SuccessInterceptor)
+@UseFilters(HttpExceptionFilter)
 export class CatsController {
   constructor(private readonly CatsService: CatsService) {}
 
   @Get()
-  @UseFilters(HttpExceptionFilter)
-  getAllCat() {
-    //* Error 처리 방법 --------------------------------
-    // throw new Error("Http error") => x  express 처럼 Error 객체를 넘기지 않음
-    // throw new HttpException('Forbidden', 401);  // => 해당 객체 반환.
-    throw new HttpException({ success: false, message: 'api is broken' }, 401); //오버라이딩 가능
-    return 'all cat';
-  }
-
-  @Get(':id')
-  getOneCat(@Param('id', ParseIntPipe, PositiveIntPipe) param: number) {
-    console.log(param);
-    console.log(typeof param);
-    return 'one cat';
+  getCurrentCat() {
+    return 'current cat';
   }
 
   @Post()
-  createCat() {
-    return 'create a new cat';
+  signUp(@Body() body: CatRequestsDto) {
+    console.log(body);
+    return 'signUp';
   }
 
-  @Put(':id')
-  updateCat() {
-    return 'update a cat';
+  @Post('login')
+  logIn() {
+    return 'login';
   }
 
-  @Patch(':id')
-  updatePartialCat() {
-    return 'patch a cat';
+  @Post('logout')
+  logOut() {
+    return 'logout';
   }
 
-  @Delete(':id')
-  deleteCat() {
-    return 'delete a cat';
+  @Post('upload/cats')
+  uploadCatImg() {
+    return 'uploadImg';
   }
 }
