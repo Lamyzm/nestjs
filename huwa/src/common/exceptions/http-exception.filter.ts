@@ -16,10 +16,12 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const request = ctx.getRequest<Request>();
     const status = exception.getStatus();
     const error = exception.getResponse();
+    // null 일경우 error를 메세지로 고정
     const responseError =
       typeof error === 'object' && error !== null ? error : { message: error };
 
     response.status(status).json({
+      success: false,
       statusCode: status,
       timestamp: new Date().toISOString(),
       path: request.url,
